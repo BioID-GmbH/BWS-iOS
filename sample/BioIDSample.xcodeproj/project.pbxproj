@@ -1,0 +1,340 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C659358E1D2F9ACB00AA0511 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C659358C1D2F9ACB00AA0511 /* Localizable.strings */; };
+		C6AE8BAF1BFDD19400C44D75 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE8BAE1BFDD19400C44D75 /* main.m */; };
+		C6AE8BB21BFDD19400C44D75 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE8BB11BFDD19400C44D75 /* AppDelegate.m */; };
+		C6AE8BB51BFDD19400C44D75 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE8BB41BFDD19400C44D75 /* ViewController.m */; };
+		C6AE8BB81BFDD19400C44D75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C6AE8BB61BFDD19400C44D75 /* Main.storyboard */; };
+		C6AE8BBA1BFDD19400C44D75 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6AE8BB91BFDD19400C44D75 /* Assets.xcassets */; };
+		C6AE8BBD1BFDD19400C44D75 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C6AE8BBB1BFDD19400C44D75 /* LaunchScreen.storyboard */; };
+		C6AE8BC81BFF21E600C44D75 /* CaptureConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE8BC51BFF21E600C44D75 /* CaptureConfiguration.m */; };
+		C6AE8BC91BFF21E600C44D75 /* CaptureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE8BC71BFF21E600C44D75 /* CaptureViewController.m */; };
+		C6AE8BD11BFF2E7100C44D75 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = C6AE8BD01BFF2E7100C44D75 /* art.scnassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C659358D1D2F9ACB00AA0511 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = BioIDSample/en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C659358F1D2F9B0F00AA0511 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = BioIDSample/de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C6AE8BAA1BFDD19400C44D75 /* BioIDSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BioIDSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6AE8BAE1BFDD19400C44D75 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C6AE8BB01BFDD19400C44D75 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C6AE8BB11BFDD19400C44D75 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C6AE8BB31BFDD19400C44D75 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		C6AE8BB41BFDD19400C44D75 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		C6AE8BB71BFDD19400C44D75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C6AE8BB91BFDD19400C44D75 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C6AE8BBC1BFDD19400C44D75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C6AE8BBE1BFDD19400C44D75 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C6AE8BC41BFF21E600C44D75 /* CaptureConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureConfiguration.h; sourceTree = "<group>"; };
+		C6AE8BC51BFF21E600C44D75 /* CaptureConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureConfiguration.m; sourceTree = "<group>"; };
+		C6AE8BC61BFF21E600C44D75 /* CaptureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureViewController.h; sourceTree = "<group>"; };
+		C6AE8BC71BFF21E600C44D75 /* CaptureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureViewController.m; sourceTree = "<group>"; };
+		C6AE8BD01BFF2E7100C44D75 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C6AE8BA71BFDD19400C44D75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C6AE8BA11BFDD19300C44D75 = {
+			isa = PBXGroup;
+			children = (
+				C6AE8BAC1BFDD19400C44D75 /* BioIDSample */,
+				C6AE8BAB1BFDD19400C44D75 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C6AE8BAB1BFDD19400C44D75 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C6AE8BAA1BFDD19400C44D75 /* BioIDSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C6AE8BAC1BFDD19400C44D75 /* BioIDSample */ = {
+			isa = PBXGroup;
+			children = (
+				C6AE8BB01BFDD19400C44D75 /* AppDelegate.h */,
+				C6AE8BB11BFDD19400C44D75 /* AppDelegate.m */,
+				C6AE8BC41BFF21E600C44D75 /* CaptureConfiguration.h */,
+				C6AE8BC51BFF21E600C44D75 /* CaptureConfiguration.m */,
+				C6AE8BC61BFF21E600C44D75 /* CaptureViewController.h */,
+				C6AE8BC71BFF21E600C44D75 /* CaptureViewController.m */,
+				C6AE8BB31BFDD19400C44D75 /* ViewController.h */,
+				C6AE8BB41BFDD19400C44D75 /* ViewController.m */,
+				C6AE8BB61BFDD19400C44D75 /* Main.storyboard */,
+				C6AE8BBB1BFDD19400C44D75 /* LaunchScreen.storyboard */,
+				C6AE8BB91BFDD19400C44D75 /* Assets.xcassets */,
+				C6AE8BD01BFF2E7100C44D75 /* art.scnassets */,
+				C6AE8BBE1BFDD19400C44D75 /* Info.plist */,
+				C659358C1D2F9ACB00AA0511 /* Localizable.strings */,
+				C6AE8BAD1BFDD19400C44D75 /* Supporting Files */,
+			);
+			path = BioIDSample;
+			sourceTree = "<group>";
+		};
+		C6AE8BAD1BFDD19400C44D75 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C6AE8BAE1BFDD19400C44D75 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C6AE8BA91BFDD19400C44D75 /* BioIDSample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C6AE8BC11BFDD19400C44D75 /* Build configuration list for PBXNativeTarget "BioIDSample" */;
+			buildPhases = (
+				C6AE8BA61BFDD19400C44D75 /* Sources */,
+				C6AE8BA71BFDD19400C44D75 /* Frameworks */,
+				C6AE8BA81BFDD19400C44D75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BioIDSample;
+			productName = BioIDSample;
+			productReference = C6AE8BAA1BFDD19400C44D75 /* BioIDSample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C6AE8BA21BFDD19300C44D75 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = BioID;
+				TargetAttributes = {
+					C6AE8BA91BFDD19400C44D75 = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
+				};
+			};
+			buildConfigurationList = C6AE8BA51BFDD19300C44D75 /* Build configuration list for PBXProject "BioIDSample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				de,
+			);
+			mainGroup = C6AE8BA11BFDD19300C44D75;
+			productRefGroup = C6AE8BAB1BFDD19400C44D75 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C6AE8BA91BFDD19400C44D75 /* BioIDSample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C6AE8BA81BFDD19400C44D75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C659358E1D2F9ACB00AA0511 /* Localizable.strings in Resources */,
+				C6AE8BBD1BFDD19400C44D75 /* LaunchScreen.storyboard in Resources */,
+				C6AE8BD11BFF2E7100C44D75 /* art.scnassets in Resources */,
+				C6AE8BBA1BFDD19400C44D75 /* Assets.xcassets in Resources */,
+				C6AE8BB81BFDD19400C44D75 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C6AE8BA61BFDD19400C44D75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C6AE8BB51BFDD19400C44D75 /* ViewController.m in Sources */,
+				C6AE8BC81BFF21E600C44D75 /* CaptureConfiguration.m in Sources */,
+				C6AE8BB21BFDD19400C44D75 /* AppDelegate.m in Sources */,
+				C6AE8BC91BFF21E600C44D75 /* CaptureViewController.m in Sources */,
+				C6AE8BAF1BFDD19400C44D75 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		C659358C1D2F9ACB00AA0511 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C659358D1D2F9ACB00AA0511 /* en */,
+				C659358F1D2F9B0F00AA0511 /* de */,
+			);
+			name = Localizable.strings;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		C6AE8BB61BFDD19400C44D75 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C6AE8BB71BFDD19400C44D75 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C6AE8BBB1BFDD19400C44D75 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C6AE8BBC1BFDD19400C44D75 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C6AE8BBF1BFDD19400C44D75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C6AE8BC01BFDD19400C44D75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C6AE8BC21BFDD19400C44D75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = BioIDSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bioid.BioIDSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C6AE8BC31BFDD19400C44D75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = BioIDSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bioid.BioIDSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C6AE8BA51BFDD19300C44D75 /* Build configuration list for PBXProject "BioIDSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C6AE8BBF1BFDD19400C44D75 /* Debug */,
+				C6AE8BC01BFDD19400C44D75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C6AE8BC11BFDD19400C44D75 /* Build configuration list for PBXNativeTarget "BioIDSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C6AE8BC21BFDD19400C44D75 /* Debug */,
+				C6AE8BC31BFDD19400C44D75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C6AE8BA21BFDD19300C44D75 /* Project object */;
+}

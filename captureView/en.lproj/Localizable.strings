@@ -1,0 +1,50 @@
+/*
+ Localizable.strings
+ BioID
+ 
+ Copyright (c) 2015 BioID. All rights reserved.
+ */
+
+// ViewController (MainScreen)
+"Enroll" = "Enroll";
+"Verify" = "Verify";
+
+// CaptureViewController
+// status
+"Initializing" = "Initializing…";
+"StartingCapture" = "Trying to detect face…";
+"CaptureTriggered" = "Move your head slightly";
+"CaptureTriggeredChallengeResponse" = "Follow me…";
+"UploadingImages" = "Uploading images…";
+// messages
+"Training" = "Training…";
+"Verifying" = "Verifying…";
+"NoCameraAvailable" = "No camera available.\nPlease allow BioID access to the camera.";
+"NoFaceFound" = "No face found";
+"MultipleFacesFound" = "Multiple faces found";
+"NoMotionDetected" = "No motion detected";
+"NoTemplateAvailable" = "You are not enrolled!";
+"SuccessfulVerification" = "Successful Verification";
+"SuccessfulEnrollment" = "Successful Enrollment";
+"EnrollmentFailed" = "Failed Enrollment";
+"VerificationFailed" = "Failed Verification";
+"LiveDetectionFailed" = "Failed Liveness Detection";
+"ChallengeResponseFailed" = "Challenge-Response failed";
+// enrollment instructions
+"EnrollmentTitle" = "Easy as a selfie";
+"EnrollmentMessage" = "Enrollment is how BioID learns to recognize you. Four sets of pictures will be taken. Hold phone at eye level and follow instructions.";
+"PleaseTurn" = "Please turn";
+"TurnBy90Degrees" = "Turn yourself 90 degrees to your right to achieve different lighting conditions." ;
+"Continue" = "Continue";
+// error messages
+"TokenRequestFailed" = "Request of BWS token failed";
+"EnsureRegistrationAndInternet" = "Please ensure that your device is registered and an internet connection is available. (%@ %ld)";
+"ConnectionError" = "Connection Error";
+"ReportedError" = "The error '%@' has been reported.";
+"ImageUploadError" = "Image Upload Error";
+"ImageDeclined" = "The uploaded image was declined!";
+"BWSResult" = "The call to the BioID Web Service returned: %@ (%@)";
+"BiometricTaskFailed" = "Biometric task failed";
+
+// Button commands
+"Abort" = "Abort";

@@ -1,0 +1,50 @@
+/*
+ Localizable.strings
+ BioID
+ 
+ Copyright (c) 2015 BioID. All rights reserved.
+ */
+
+// ViewController (MainScreen)
+"Enroll" = "Einlernen";
+"Verify" = "Erkennung";
+
+// CaptureViewController
+// status
+"Initializing" = "Initialisierung…";
+"StartingCapture" = "Suche Gesicht…";
+"CaptureTriggered" = "Kopf leicht bewegen";
+"CaptureTriggeredChallengeResponse" = "Folgen Sie mir…";
+"UploadingImages" = "Bilder werden übertragen…";
+// messages
+"Training" = "Einlernen…";
+"Verifying" = "Erkennen…";
+"NoCameraAvailable" = "Keine Kamera verfügbar.\nBitte erlauben Sie BioID den Zugriff auf die Kamera.";
+"NoFaceFound" = "Es wurde kein Gesicht gefunden.";
+"MultipleFacesFound" = "Mehr als ein Gesicht wurde gefunden.";
+"NoMotionDetected" = "Keine Bewegung detektiert.";
+"NoTemplateAvailable" = "Sie sind noch nicht eingelernt.";
+"SuccessfulVerification" = "Erkennung erfolgreich.";
+"SuccessfulEnrollment" = "Einlernen erfolgreich.";
+"EnrollmentFailed" = "Einlernen fehlgeschlagen.";
+"VerificationFailed" = "Erkennung fehlgeschlagen.";
+"LiveDetectionFailed" = "Lebenderkennung fehlgeschlagen.";
+"ChallengeResponseFailed" = "Challenge-Response Prüfung fehlgeschlagen.";
+// enrollment instructions
+"EnrollmentTitle" = "So einfach wie ein Selfie";
+"EnrollmentMessage" = "Das Einlernen erfasst Ihr Gesicht biometrisch. Dazu werden vier Bilder gemacht. Halten Sie das Gerät auf Augenhöhe und folgen Sie den Anweisungen.";
+"PleaseTurn" = "Bitte seitlich drehen.";
+"TurnBy90Degrees" = "Machen Sie nun eine viertel Drehung nach rechts, um andere Lichtverhältnisse zu schaffen.";
+"Continue" = "Weiter";
+// error messages
+"TokenRequestFailed" = "Tokenanfrage fehlgeschlagen";
+"EnsureRegistrationAndInternet" = "Stellen Sie sicher, dass das Gerät registriert ist und eine Verbindung zum Internet besteht. (%@ %ld)";
+"ConnectionError" = "Verbindungsfehler";
+"ReportedError" = "Es wurde der Fehler '%@' gemeldet.";
+"ImageUploadError" = "Bildübertragung fehlgeschlagen";
+"ImageDeclined" = "Das Bild wurde vom Service zurückgewiesen!";
+"BWSResult" = "Der BioID Web Service antwortete: %@ (%@)";
+"BiometricTaskFailed" = "Biometrischer Vorgang fehlgeschlagen";
+
+// Button commands
+"Abort" = "Abbrechen";
