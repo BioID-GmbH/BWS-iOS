@@ -21,12 +21,15 @@
 @synthesize previewView;
 @synthesize captureSession;
 
+
 // Faces to be found continuously until the initial recording is triggered
-static int const TRIGGER_TO_START = 20;
+static int const TRIGGER_TO_START = 5;
+// Wait a moment for camera adjustment
+static double const WAIT_FOR_CAMERA_ADJUSTMENT = 0.9;
 // If no face was found (by client) upload the first image
-static int const TRIGGER_INTERVAL = 3.0;
+static double const TRIGGER_INTERVAL = 3.0;
 // Reaction time for a challenge
-static int const CHALLENGE_RESPONSE_INTERVAL = 1.2;
+static double const CHALLENGE_RESPONSE_INTERVAL = 1.0;
 // Seconds a message will be shown on the screen
 static NSTimeInterval const MESSAGE_DISPLAY_TIME = 3.0;
 static NSTimeInterval const MESSAGE_DISPLAY_TIME_SHORT = 1.7;
@@ -35,7 +38,7 @@ static NSTimeInterval const INACTIVITY_TIMEOUT = 12;
 // Pixel intensity values below this will be considered as being noise
 static int const NOISE_INTENSITY_LEVEL = 36;
 // The threshold value given in percentage of complete motion (i.e. between 0 and 100)
-static int const MIN_MOVEMENT_PERCENTAGE = 25;
+static int const MIN_MOVEMENT_PERCENTAGE = 18;
 // Maximum tries until failure is reported
 static int const DEFAULT_MAX_TRIES = 3;
 // Maximum tries until abort
@@ -65,6 +68,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     uploading = 0;
     turnCount = 0;
     noFaceFound = 0;
+    sequenceNumber = 0;
     
     requiredTurns = REQUIRED_TURNS;
     executions = DEFAULT_MAX_TRIES;
@@ -239,11 +243,12 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     capturing = false;
     captureTriggered = false;
     challengeRunning = false;
-    faceFinderRunning = true;
+    faceFinderRunning = false;
     
     uploaded = 0;
     uploading = 0;
     recordings = 2;
+    sequenceNumber = 0;
     continuousFoundFaces = 0;
     
     uploadTask1 = nil;
@@ -261,6 +266,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     [self startDismissTimer:NSLocalizedString(@"NoCameraAvailable", nil)];
     // Auto trigger after some time
     [self startTriggerTimer];
+    [self startWaitForCameraTimer];
     
     // Read the BWS TokenTask
     if ((taskFlags & TokenTaskChallengeResponse) == TokenTaskChallengeResponse &&
@@ -492,6 +498,8 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         [self killDismissTimer];
         
         uploading++;
+        sequenceNumber++;
+        
         if (uploaded + uploading == recordings) {
             [self hide3DHeadLayer];
             [self showStatusLayer:NSLocalizedString(@"UploadingImages", nil)];
@@ -506,7 +514,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         
         NSString *uploadCommand = @"upload";
         if (tag) {
-            uploadCommand = [NSString stringWithFormat:@"upload?tag=%@", tag];
+            uploadCommand = [NSString stringWithFormat:@"upload?tag=%@&index=%i&trait=FACE", tag, sequenceNumber];
         }
         
         NSURL *url = [NSURL URLWithString:uploadCommand relativeToURL:self.configuration.bwsInstance];
@@ -755,7 +763,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     
     if (width != width2 || height != height2)
         return false;
-    
+   
     CFDataRef abgrData1 = CGDataProviderCopyData(CGImageGetDataProvider(first));
     const UInt8* p1 = CFDataGetBytePtr(abgrData1);
     
@@ -789,7 +797,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             // Use the absolute difference of source and target pixel intensity as a motion measurement
             int difference = abs(p1[offset+2] - p2[offset+2]);
             differenceSum += difference;
-            differenceImage[numberOfPixels++] = (Byte)difference;
+            differenceImage[numberOfPixels++] = difference;
         }
     }
     
@@ -917,6 +925,14 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     // Get front camera
     captureDevice = [self frontCamera];
     
+    // setting up white balance
+    if ([captureDevice isWhiteBalanceModeSupported: AVCaptureWhiteBalanceModeAutoWhiteBalance]) {
+      if ([captureDevice lockForConfiguration:nil]) {
+          [captureDevice setWhiteBalanceMode:AVCaptureWhiteBalanceModeAutoWhiteBalance];
+          [captureDevice unlockForConfiguration];
+      }
+    }
+    
     // Add the device to the session.
     AVCaptureDeviceInput *input = [[AVCaptureDeviceInput alloc] initWithDevice:captureDevice error:&error];
     if(error) {
@@ -992,6 +1008,19 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
 }
 
 #pragma mark - Timers
+    
+- (void)startWaitForCameraTimer {
+    cameraTimer = [NSTimer scheduledTimerWithTimeInterval:WAIT_FOR_CAMERA_ADJUSTMENT target:self selector:@selector(killWaitForCameraTimer) userInfo:nil repeats:NO];
+}
+    
+- (void)killWaitForCameraTimer {
+    if (cameraTimer && [cameraTimer isValid]) {
+        NSLog(@"Kill camera Timer");
+        [cameraTimer invalidate];
+        faceFinderRunning = true;
+    }
+    cameraTimer = nil;
+}
 
 - (void)startDismissTimer:(NSString *)message {
     [self killDismissTimer];
@@ -1129,16 +1158,16 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     // Create sequence for 3D Head
     for (id direction in currentChallenge) {
         if([direction isEqualToString:@"up"]) {
-            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:-0.5 y:0 z:0 duration:0.5]]]];
+            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:-0.5 y:0 z:0 duration:1.0]]]];
         }
         else if([direction isEqualToString:@"down"]) {
-            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0.5 y:0 z:0 duration:0.5]]]];
+            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0.5 y:0 z:0 duration:1.0]]]];
         }
         else if([direction isEqualToString:@"left"]) {
-            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0 y:-0.5 z:0 duration:0.5]]]];
+            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0 y:-0.5 z:0 duration:1.0]]]];
         }
         else if([direction isEqualToString:@"right"]) {
-            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0 y:0.5 z:0 duration:0.5]]]];
+            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0 y:0.5 z:0 duration:1.0]]]];
         }
         NSLog(@"%@", direction);
     }
@@ -1464,7 +1493,6 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         [self stop];
         [self reportError:error.localizedDescription withTitle:NSLocalizedString(@"ConnectionError", nil) allowContinue:NO];
     }
-    task = nil;
 }
 
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(nullable NSError *)error {

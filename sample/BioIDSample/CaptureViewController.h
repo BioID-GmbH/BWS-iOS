@@ -59,6 +59,7 @@ typedef enum {
     NSDictionary *detectorOptions;
 
     // Timers
+    NSTimer *cameraTimer;
     NSTimer *killTimer;
     NSTimer *triggerTimer;
     NSTimer *displayTimer;
@@ -93,6 +94,8 @@ typedef enum {
     int uploaded;
     // Counter for uploading images
     int uploading;
+    // Numbering to ensure order of upload samples
+    int sequenceNumber;
     // Counter for continuous found faces
     int continuousFoundFaces;
 
