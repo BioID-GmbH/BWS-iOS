@@ -15,4 +15,4 @@ Complete sample for biometric enrollment and verification is provided in the **s
 
 To successfully run the sample iOS app, you need to have access to an existing BWS installation. If you don't have this access you can [register for a trial instance](https://playground.bioid.com/BioIDWebService/TrialInstanceRequisition).
 
-You can also try out the BioID [facial recognition app](https://mobile.bioid.com/) with identity management using BioID Connect - available via [iTunes App Store] (https://itunes.apple.com/en/app/bioid-facial-recognition-authenticator/id1054317153).
+You can also try out the BioID [facial recognition app](https://mobile.bioid.com/) with identity management using BioID Connect - available via [iTunes App Store] (https://itunes.apple.com/us/app/bioid-facial-recognition-authenticator/id1054317153).
