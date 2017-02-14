@@ -35,10 +35,8 @@ static NSTimeInterval const MESSAGE_DISPLAY_TIME = 3.0;
 static NSTimeInterval const MESSAGE_DISPLAY_TIME_SHORT = 1.7;
 // Seconds after which the view will be dismissed if no activity (face finding/motion detection/...) was detected
 static NSTimeInterval const INACTIVITY_TIMEOUT = 12;
-// Pixel intensity values below this will be considered as being noise
-static int const NOISE_INTENSITY_LEVEL = 36;
 // The threshold value given in percentage of complete motion (i.e. between 0 and 100)
-static int const MIN_MOVEMENT_PERCENTAGE = 18;
+static int const MIN_MOVEMENT_PERCENTAGE = 15;
 // Maximum tries until failure is reported
 static int const DEFAULT_MAX_TRIES = 3;
 // Maximum tries until abort
@@ -162,11 +160,12 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     videoDataOutput = nil;
     videoDataOutputQueue = nil;
     
-    referenceImage = nil;
-    
     // FaceDetector
     faceDetector = nil;
     detectorOptions = nil;
+    
+    // Motion detection
+    templateBuffer = nil;
     
      // Timers
     [killTimer invalidate];
@@ -253,8 +252,8 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     
     uploadTask1 = nil;
     uploadTask2 = nil;
-    referenceImage = nil;
     currentChallenge = nil;
+    templateBuffer = nil;
     
     // Hide layers
     [self hideMessageLayer];
@@ -392,9 +391,9 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         if (uploaded + uploading < recordings) {
             
             BOOL motion = true;
-            if (referenceImage) {
+            if (templateBuffer) {
                 // Calculate motion ...
-                motion = [self motionDetection:referenceImage.CGImage current:currentImage.CGImage];
+                motion = [self motionDetection:currentImage];
             }
             
             if (motion) {
@@ -409,17 +408,14 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
                     challengeRunning = true;
                 }
                 
-                // Set the current image as the new reference image
-                referenceImage = currentImage;
-                
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     [self uploadSample:currentImage withTag:tag];
                 });
+                
+                // create template for motion detection
+                [self createTemplate:currentImage];
             }
-        } else {
-            // Not needed any more!
-            referenceImage = nil;
-        }
+        } 
     }
 }
 
@@ -529,10 +525,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         
         NSLog(@"PNG FileSize: %.f KB", (float)pngImage.length/1024.0f);
         NSString* base64Image = [NSString stringWithFormat:@"data:image/png;base64,%@", [pngImage base64EncodedStringWithOptions:0]];
-#ifdef DEBUG
-        NSUInteger bytes = [base64Image lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
-#endif
-        NSLog(@"PNG Base64 Size: %.f KB", (float)bytes/1024.0f);
+        NSLog(@"PNG Base64 Size: %.f KB", (float)[base64Image lengthOfBytesUsingEncoding:NSUTF8StringEncoding]/1024.0f);
         
         [request setHTTPMethod:@"POST"];
         [request setValue:authorizationHeader forHTTPHeaderField:@"Authorization"];
@@ -753,139 +746,146 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     return grayImage;
 }
 
-// Motion detection by simply calculating the difference of two images
-- (BOOL)motionDetection:(CGImageRef)first current:(CGImageRef)current {
-    int width = (int)CGImageGetWidth(first);
-    int height = (int)CGImageGetHeight(first);
+- (UIImage *)resizeImageForMotionDetection:(UIImage *)image {
+    int resizeWidth;
+    int resizeHeight;
     
-    int width2 = (int)CGImageGetWidth(current);
-    int height2 = (int)CGImageGetHeight(current);
+    if (image.size.width > image.size.height) {
+        // Landscape mode
+        resizeHeight = 120;
+        // Calculate new width according to aspect ratio of original image
+        resizeWidth = image.size.width * resizeHeight / image.size.height;
+    }
+    else {
+        // Portrait mode
+        resizeWidth = 120;
+        // Calculate new height according to aspect ratio of original image
+        resizeHeight = image.size.height * resizeWidth / image.size.width;
+    }
+
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(resizeWidth, resizeHeight), YES, 0.0);
+    [image drawInRect:CGRectMake(0, 0, resizeWidth, resizeHeight)];
+    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resizedImage;
+}
+
+// Cut out the template that is used by the motion detection.
+-(void)createTemplate:(UIImage *)first {
+    UIImage *resizedImage = [self resizeImageForMotionDetection:first];
+    UIImage *resizedGrayImage = [self convertImageToGrayScale:resizedImage];
     
-    if (width != width2 || height != height2)
-        return false;
+    resizeCenterX = resizedGrayImage.size.width / 2;
+    resizeCenterY = resizedGrayImage.size.height / 2;
+    
+    if (resizedGrayImage.size.width > resizedGrayImage.size.height) {
+        // Landscape mode
+        templateWidth = resizedGrayImage.size.width / 10;
+        templateHeight = resizedGrayImage.size.height / 3;
+    }
+    else {
+        // Portrait mode
+        templateWidth = resizedImage.size.width / 10 * 4 / 3;
+        templateHeight = resizedImage.size.height / 4;
+    }
    
-    CFDataRef abgrData1 = CGDataProviderCopyData(CGImageGetDataProvider(first));
-    const UInt8* p1 = CFDataGetBytePtr(abgrData1);
+    templateXpos = resizeCenterX - templateWidth / 2;
+    templateYpos = resizeCenterY - templateHeight / 2;
     
-    CFDataRef abgrData2 = CGDataProviderCopyData(CGImageGetDataProvider(current));
-    const UInt8* p2 = CFDataGetBytePtr(abgrData2);
+    templateBuffer = nil;
+    templateBuffer = malloc(templateWidth * templateHeight);
     
-    // Calculate simple difference ot two images - concentrating on the centre
-    int differenceSum = 0;
-    bool triggered = false;
-    
-    // Moving objects in the background often disturb automatic motion detection, so we will concentrate on the middle of the images
-    // We will cut out the inner half difference image, i.e. we want to get rid of 1/4th margin on all sides
-    int differenceImageWidth = width / 2;
-    int differenceImageHeight = height / 2;
-    UInt8 differenceImage[differenceImageWidth * differenceImageHeight];
-    
-    int numberOfPixels = 0;
-    
-    // We leave 1/4 margin to top and bottom
-    int verticalStart = height / 4;
-    int verticalEnd = 3 * height / 4;
-    // And 1/4 margin to left and right
-    int horizontalStart = width / 4;
-    int horizontalEnd = 3 * width / 4;
-    
-    for (int y = verticalStart; y < verticalEnd; y++) {
-        for (int x = horizontalStart; x < horizontalEnd; x++) {
-            
-            int offset = (x + (y * width)) * 4;
-            
-            // Use the absolute difference of source and target pixel intensity as a motion measurement
-            int difference = abs(p1[offset+2] - p2[offset+2]);
-            differenceSum += difference;
-            differenceImage[numberOfPixels++] = difference;
+    CFDataRef rawData = CGDataProviderCopyData(CGImageGetDataProvider(resizedGrayImage.CGImage));
+    int bytesPerRow = (int)CGImageGetBytesPerRow(resizedGrayImage.CGImage);
+    const UInt8* buffer = CFDataGetBytePtr(rawData);
+
+    int counter = 0;
+    for (int y = templateYpos; y < templateYpos + templateHeight; y++) {
+        for (int x = templateXpos; x < templateXpos + templateWidth; x++) {
+            int templatePixel = buffer[x + y * bytesPerRow];
+            templateBuffer[counter++] = templatePixel;
         }
     }
+   
+    // Release
+    CFRelease(rawData);
+}
+
+// This is the major computing step: Perform a normalized cross-correlation between the template of the first image and each incoming image.
+// This algorithm is basically called: "Template Matching" - we use the normalized cross correlation to be independent of lighting images.
+// We calculate the correlation of template and image over whole image area.
+-(BOOL)motionDetection:(UIImage *)current {
+ #ifdef DEBUG
+    NSDate *start = [NSDate date];
+ #endif
     
-    // Mean difference: Divide by ROI
-    int meanDiffROI = (int)(((double)differenceSum / (double)numberOfPixels) + 0.5);
+    UIImage *resizedImage = [self resizeImageForMotionDetection:current];
+    UIImage *resizedGrayImage = [self convertImageToGrayScale:resizedImage];
+ 
+    int bestHitX = 0;
+    int bestHitY = 0;
+    double maxCorr = 0.0;
+    bool triggered = false;
+ 
+    int searchWidth = resizedGrayImage.size.width / 4;
+    int searchHeight = resizedGrayImage.size.height / 4;
     
-    // Mean Difference: Never lower than noise level
-    int meanDiff = (meanDiffROI < NOISE_INTENSITY_LEVEL) ? NOISE_INTENSITY_LEVEL : meanDiffROI;
+    CFDataRef rawData = CGDataProviderCopyData(CGImageGetDataProvider(resizedGrayImage.CGImage));
+    int bytesPerRow = (int)CGImageGetBytesPerRow(resizedGrayImage.CGImage);
+    const UInt8* buffer = CFDataGetBytePtr(rawData);
     
-    // We want to roughly calculate the bounding moving box
-    int movingAreaX1 = 0;
-    int movingAreaX2 = 0;
-    int movingAreaY1 = 0;
-    int movingAreaY2 = 0;
-    
-    // This will count all pixels that changed within the moving area
-    int changedPixels = 0;
-    
-    // This is the main loop to determine a human's head bounding box
-    // Basically, we start from top to bottom,
-    // then try to find the horizontal coordinates of the head width,
-    // and stop before the shoulder area would enlarge that box again
-    int posCount = 0;
-    for (int y = 1; y < differenceImageHeight; y++) {
-        for (int x = 0; x < differenceImageWidth; x++) {
+    for (int y = resizeCenterY - searchHeight; y <= resizeCenterY + searchHeight - templateHeight; y++) {
+        for (int x = resizeCenterX - searchWidth; x <= resizeCenterX + searchWidth - templateWidth; x++) {
+            int nominator = 0;
+            int denominator = 0;
+            int templateIndex = 0;
             
-            int difference = differenceImage[posCount++];
-            
-            // For moving area detection, we only count differences higher than normal noise
-            if (difference > meanDiff)
-            {
-                // The first movement pixel will determine the starting coordinates
-                if (movingAreaY1 == 0)
-                {
-                    // This is typically the top head position
-                    movingAreaX1 = x;
-                    movingAreaY1 = y;
-                    movingAreaX2 = x;
-                    movingAreaY2 = y;
+            // Calculate the normalized cross-correlation coefficient for this position
+            for (int ty = 0; ty < templateHeight; ty++) {
+                int bufferIndex = x + (y + ty) * bytesPerRow;
+                for (int tx = 0; tx < templateWidth; tx++) {
+                    int imagePixel = buffer[bufferIndex++];
+                    nominator += templateBuffer[templateIndex++] * imagePixel;
+                    denominator += imagePixel * imagePixel;
                 }
-                
-                // We do not want to get into the shoulder area
-                if (y < 3 * differenceImageHeight / 5) {
-                    if (x < movingAreaX1) {
-                        // New left coordinate of bounding box
-                        movingAreaX1 = x;
-                    }
-                    else if (x > movingAreaX2) {
-                        // New right coordinate of bounding box
-                        movingAreaX2 = x;
-                    }
-                }
-                
-                // We assume here that the vertical height of a human head is not exceeding 1.33 times the head width
-                if ((y >= movingAreaY2) && (y - movingAreaY1 < 4 * (movingAreaX2 - movingAreaX1) / 3)) {
-                    // Only if the condition above is true we will use this lower vertical coordinate
-                    // This avoids expaning the bounding box to the bottom of the screen
-                    movingAreaY2 = y;
-                    
-                    // If the current location is within this calculated area, then we have a new movement within the head area
-                    if ((x >= movingAreaX1) && (x <= movingAreaX2)) {
-                        changedPixels++;
-                    }
-                }
+            }
+        
+            // The NCC coefficient is then (watch out for division-by-zero errors for bure black images)
+            double ncc = 0.0;
+            if (denominator > 0) {
+                ncc = (double)nominator * (double)nominator / (double)denominator;
+            }
+            // Is it higher that what we had before?
+            if (ncc > maxCorr) {
+                maxCorr = ncc;
+                bestHitX = x;
+                bestHitY = y;
             }
         }
     }
     
-    // Calculate area of moving object
-    int movingAreaWidth = movingAreaX2 - movingAreaX1 + 1;
-    int movingAreaHeight = movingAreaY2 - movingAreaY1 + 1;
+    // Now the most similar position of the template is (bestHitX, bestHitY). Calculate the difference from the origin
+    int distX = bestHitX - templateXpos;
+    int distY = bestHitY - templateYpos;
+
+    double movementDiff = sqrt(distX * distX + distY * distY);
     
-    // Was there any suitable movement at all?
-    if ((movingAreaWidth <= 0) || (movingAreaHeight <= 0)) {
-        movingAreaWidth = 1;
-        movingAreaHeight = 1;
-        changedPixels = 0;
+    // The maximum movement possible is a complete shift into one of the corners, i.e.
+    int maxDistX = searchWidth - templateWidth / 2;
+    int maxDistY = searchHeight - templateHeight / 2;
+    double maximumMovement = sqrt((double)maxDistX * maxDistX + (double)maxDistY * maxDistY);
+    
+    // The percentage of the detected movement is therefore
+    double movementPercentage = movementDiff / maximumMovement * 100.0;
+    
+    if (movementPercentage > 100.0) {
+        movementPercentage = 100.0;
     }
-    
-    // Moving area difference: Calculate changes according to size
-    double movementDiff = (double)changedPixels / (double)(movingAreaWidth * movingAreaHeight);
-    
-    // MovementDiff now holds the percentage of moving pixels within the moving area. Let's bring that to [0.0; 100.0]
-    movementDiff *= 100.0;
-    
+ 
 #ifdef DEBUG
-    NSString *info = [NSString stringWithFormat:@"meanDROI: %i - meanDiff: %i - movDiff: %.1f", meanDiffROI, meanDiff, movementDiff];
-    
+    NSDate *stop = [NSDate date];
+    NSTimeInterval execution = [stop timeIntervalSinceDate:start];
+    NSString *info = [NSString stringWithFormat:@"Time: %.3fs - Movement: %.1f", execution, movementPercentage];
     NSMutableAttributedString *infoString =[[NSMutableAttributedString alloc] initWithString:@""];
     
     if (info != NULL) {
@@ -900,18 +900,13 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     });
 #endif
     
-    // If moving area is big enough to be a human face, then let's trigger
-    // We accept only faces that are at least 1/20th of the image dimensions
-    if ((movingAreaWidth > width / 20) && (movingAreaHeight > height / 20)) {
-        // Trigger if movementDiff is above threshold (default: when 10% of face bounding box pixels changed)
-        if (movementDiff > MIN_MOVEMENT_PERCENTAGE) {
-            triggered = true;
-        }
+    // Trigger if movementPercentage is above threshold (default: when 15% of the maximum movement is exceeded)
+    if (movementPercentage > MIN_MOVEMENT_PERCENTAGE)  {
+        triggered = true;
     }
     
     // Release
-    CFRelease(abgrData1);
-    CFRelease(abgrData2);
+    CFRelease(rawData);
     
     return triggered;
 }
@@ -973,8 +968,6 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
 }
 
 - (void)teardownAVCapture {
-    // if (videoDataOutputQueue)
-    //       dispatch_release(videoDataOutputQueue);
     [previewLayer removeFromSuperlayer];
 }
 

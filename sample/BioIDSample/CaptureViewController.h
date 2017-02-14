@@ -9,6 +9,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SceneKit/SceneKit.h>
 #import <ImageIO/ImageIO.h>
+#import <math.h>
 #import "CaptureConfiguration.h"
 
 // BioID Web Service (BWS) TokenTask flags
@@ -64,9 +65,15 @@ typedef enum {
     NSTimer *triggerTimer;
     NSTimer *displayTimer;
     NSTimer *challengeResponseTimer;
-
-    // Reference image for motion detection
-    UIImage *referenceImage;
+    
+    // Template for motion detection
+    int templateWidth;
+    int templateHeight;
+    int templateXpos;
+    int templateYpos;
+    int resizeCenterX;
+    int resizeCenterY;
+    UInt8* templateBuffer;
     
     // Set of challenges (challenge response)
     NSArray *challenges;
