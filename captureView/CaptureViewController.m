@@ -785,8 +785,8 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     }
     else {
         // Portrait mode
-        templateWidth = resizedImage.size.width / 10 * 4 / 3;
-        templateHeight = resizedImage.size.height / 4;
+        templateWidth = resizedGrayImage.size.width / 10 * 4 / 3;
+        templateHeight = resizedGrayImage.size.height / 4;
     }
    
     templateXpos = resizeCenterX - templateWidth / 2;
@@ -1083,8 +1083,23 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     cameraNode.camera = [SCNCamera camera];
     
     // Place the camera
-    cameraNode.position = SCNVector3Make(-0.05, 0.15, 0.7);
+    cameraNode.position = SCNVector3Make(0.0, 0.15, 2.0);
     [headScene.rootNode addChildNode:cameraNode];
+    
+    // create and add a light to the scene
+    SCNNode *lightNode = [SCNNode node];
+    lightNode.light = [SCNLight light];
+    lightNode.light.type = SCNLightTypeOmni;
+    lightNode.position = SCNVector3Make(0, 10, 10);
+    [headScene.rootNode addChildNode:lightNode];
+    
+    // create and add an ambient light to the scene
+    SCNNode *ambientLightNode = [SCNNode node];
+    ambientLightNode.light = [SCNLight light];
+    ambientLightNode.light.type = SCNLightTypeAmbient;
+    ambientLightNode.light.color = [UIColor darkGrayColor];
+    [headScene.rootNode addChildNode:ambientLightNode];
+
     
     // Retrieve the head node
     headNode = nil;
@@ -1113,12 +1128,12 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     if (randDirection <= 50) {
             
         // Left rotation and back to center position
-        SCNAction *centerToLeftAction = [SCNAction rotateByX:0 y:-0.5 z:0 duration:0.7];
-        SCNAction *leftToCenterAction = [SCNAction rotateByX:0 y:0.5 z:0 duration:0.7];
+        SCNAction *centerToLeftAction = [SCNAction rotateByX:0 y:-0.2 z:0 duration:0.7];
+        SCNAction *leftToCenterAction = [SCNAction rotateByX:0 y:0.2 z:0 duration:0.7];
         
         // Right rotation and back to center position
-        SCNAction *centerToRightAction = [SCNAction rotateByX:0 y:0.5 z:0 duration:0.7];
-        SCNAction *rightToCenterAction = [SCNAction rotateByX:0 y:-0.5 z:0 duration:0.7];
+        SCNAction *centerToRightAction = [SCNAction rotateByX:0 y:0.2 z:0 duration:0.7];
+        SCNAction *rightToCenterAction = [SCNAction rotateByX:0 y:-0.2 z:0 duration:0.7];
             
         // Complete sequence
         sequenceAction = [SCNAction repeatActionForever:[SCNAction sequence:@[centerToLeftAction, pauseAction, leftToCenterAction,
@@ -1126,12 +1141,12 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     }
     else {
         // Up rotation and back to center position
-        SCNAction *centerToUpAction = [SCNAction rotateByX:-0.5 y:0 z:0 duration:0.7];
-        SCNAction *upToCenterAction = [SCNAction rotateByX:0.5 y:0 z:0 duration:0.7];
+        SCNAction *centerToUpAction = [SCNAction rotateByX:-0.2 y:0 z:0 duration:0.7];
+        SCNAction *upToCenterAction = [SCNAction rotateByX:0.2 y:0 z:0 duration:0.7];
         
         // Down rotation and back to center position
-        SCNAction *centerToDownAction = [SCNAction rotateByX:0.5 y:0 z:0 duration:0.7];
-        SCNAction *downToCenterAction = [SCNAction rotateByX:-0.5 y:0 z:0 duration:0.7];
+        SCNAction *centerToDownAction = [SCNAction rotateByX:0.2 y:0 z:0 duration:0.7];
+        SCNAction *downToCenterAction = [SCNAction rotateByX:-0.2 y:0 z:0 duration:0.7];
             
         // Complete sequence
         sequenceAction = [SCNAction repeatActionForever:[SCNAction sequence:@[centerToUpAction, pauseAction, upToCenterAction,
@@ -1151,16 +1166,16 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     // Create sequence for 3D Head
     for (id direction in currentChallenge) {
         if([direction isEqualToString:@"up"]) {
-            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:-0.5 y:0 z:0 duration:1.0]]]];
+            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:-0.2 y:0 z:0 duration:1.0]]]];
         }
         else if([direction isEqualToString:@"down"]) {
-            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0.5 y:0 z:0 duration:1.0]]]];
+            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0.2 y:0 z:0 duration:1.0]]]];
         }
         else if([direction isEqualToString:@"left"]) {
-            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0 y:-0.5 z:0 duration:1.0]]]];
+            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0 y:-0.2 z:0 duration:1.0]]]];
         }
         else if([direction isEqualToString:@"right"]) {
-            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0 y:0.5 z:0 duration:1.0]]]];
+            [challengeSCNActions addObject:[SCNAction sequence:@[[SCNAction rotateByX:0 y:0.2 z:0 duration:1.0]]]];
         }
         NSLog(@"%@", direction);
     }
