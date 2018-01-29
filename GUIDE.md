@@ -1,8 +1,6 @@
-Developer Guide
-===============
+# Developer Guide
 
 There are many ways to integrate this code into your iOS app. Here is one way. 
--------------------------------------------------------------------------------------------------
 
 ## Files required
 Add the following files from the **captureView** folder to your Xcode project:
@@ -64,12 +62,14 @@ The required data (BWS instance name, client app id, client app secret and BCID 
 
 
 ### Request a trial instance 
-On playground.bioid.com request a [trial instance] (https://playground.bioid.com/BioIDWebService/TrialInstanceRequisition).
+On bwsportal.bioid.com request a [trial instance] (https://bwsportal.bioid.com/register).
 A free user registration is required. After you have access to the BioID Web Service (BWS) you can continue to create and configure your client app.
 
 
-### Create and configure your client app
-The `Credentials` pane shows the name for your BWS instance in the section BWS Client Configuration, as well as other information needed for the user BCIDs.
+### Create and configure your client app on bwsportal.bioid.com
+After you are logged in to the portal, select your client and go to the 'Configuration' section. 
+The 'Client configuration' contains all information for accessing the BWS, as well as other information needed for the user BCIDs.
+
 For the creation of BCIDs for users in your app the following information is needed:
 
 - Storage e.g. `bws`
@@ -77,10 +77,10 @@ For the creation of BCIDs for users in your app the following information is nee
 - UserID – this is a unique number you assign to the user, e.g. `4711`
 
 
-The BCID with the example values from above is `bws.12.4711`. For more information about BCID take a look at [BiometricClassID Class] (https://playground.bioid.com/BioIDWebService/SOAPApi/BiometricClassID) documentation.
-Take a look at BWS URL for e.g. https://bws.bioid.com (BWS-Installation Multitenant). In this case the BWS instance name is `bws`.
+The BCID with the example values from above is `bws.12.4711`.
+Take a look at Web API endpoint for e.g. `https://bws.bioid.com`. In this case the BWS instance name is `bws`.
 
-Go to the `Client Apps` section and click the `Register a new Client App` button. In the dialog window the client app identifier and secret is shown.
+Click on the 'Web API keys' the add button. In the dialog window the app identifier and app secret is shown.
 
 ***Now you have all necessary data to call BWS!***
 
