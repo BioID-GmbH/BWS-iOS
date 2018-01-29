@@ -62,7 +62,7 @@ The required data (BWS instance name, client app id, client app secret and BCID 
 
 
 ### Request a trial instance 
-On bwsportal.bioid.com request a [trial instance] (https://bwsportal.bioid.com/register).
+On bwsportal.bioid.com request a [trial instance](https://bwsportal.bioid.com/register).
 A free user registration is required. After you have access to the BioID Web Service (BWS) you can continue to create and configure your client app.
 
 
