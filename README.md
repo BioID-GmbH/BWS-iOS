@@ -12,5 +12,6 @@ The **captureView** folder contains everything you typically need to run a biome
 Complete sample for biometric enrollment and verification is provided in the **sample** folder.
 
 To successfully run the sample iOS app, you need to have access to an existing BWS installation. If you don't have this access you can [register for a trial instance](https://bwsportal.bioid.com/register).
+For the complete documentation of the BWS API please visit the [Developer Reference](https://developer.bioid.com/bwsreference).
 
 You can also try out the BioID [facial recognition app](https://www.bioid.com/facial-recognition-app) with identity management using BioID Connect - available via [iTunes App Store](https://itunes.apple.com/us/app/bioid-facial-recognition-authenticator/id1054317153).

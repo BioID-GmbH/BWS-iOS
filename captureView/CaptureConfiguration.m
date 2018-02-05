@@ -7,14 +7,11 @@
 
 #import "CaptureConfiguration.h"
 
-#warning Use need to put your own credentials here.
+#error You need to put your own credentials here. Go to https://bwsportal.bioid.com/register if you don't have a trial instance of BWS!
 NSString * const BWS_INSTANCE_NAME = @"";
 NSString * const CLIENT_APP_ID = @"";
 NSString * const CLIENT_APP_SECRET = @"";
 NSString * const BCID = @"";
-
-// CHALLENGE RESPONSE SHOULD BE USED ONLY FOR VERIFICATION
-BOOL challenge;
 
 @implementation CaptureConfiguration
 
@@ -24,27 +21,36 @@ BOOL challenge;
         _bwsToken = nil;
         _performEnrollment = false;
         _bwsInstance = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@.bioid.com/extension/", BWS_INSTANCE_NAME]];
-        challenge = false;
+        _challenge = false;
     }
     return self;
 }
 
--(id)initForEnrollment {
+-(id)initForEnrollment:(NSString *) traits {
     if (self = [super init]) {
         _bwsToken = nil;
         _performEnrollment = true;
         _bwsInstance = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@.bioid.com/extension/", BWS_INSTANCE_NAME]];
-        challenge = false;
+        _traits = traits;
+        if (traits.length == 0) {
+            _traits = @"Face,Periocular"; // this is the default value of BioID Web Service (BWS)
+        }
+        // CHALLENGE RESPONSE SHOULD BE USED ONLY FOR VERIFICATION
+        _challenge = false;
     }
     return self;
 }
 
--(id)initForVerification:(BOOL)enableChallenge {
+-(id)initForVerification:(BOOL)enableChallenge withTraits:(NSString *) traits {
     if (self = [super init]) {
         _bwsToken = nil;
         _performEnrollment = false;
         _bwsInstance = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@.bioid.com/extension/", BWS_INSTANCE_NAME]];
-        challenge = enableChallenge;
+        _traits = traits;
+        if (traits.length == 0) {
+            _traits = @"Face,Periocular"; // this is the default value of BioID Web Service (BWS)
+        }
+        _challenge = enableChallenge;
     }
     return self;
 }
@@ -75,7 +81,7 @@ BOOL challenge;
 
 - (void)fetchBWSToken:(NSString*) bwsTask onCompletion:(void (^)(NSString *, NSError *))callbackBlock {
     // Create BWS Extension URL
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@.bioid.com/extension/token?id=%@&bcid=%@&task=%@&challenge=%@", BWS_INSTANCE_NAME, CLIENT_APP_ID, BCID, bwsTask, challenge ? @"true" : @"false"]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@.bioid.com/extension/token?id=%@&bcid=%@&task=%@&challenge=%@&traits=%@", BWS_INSTANCE_NAME, CLIENT_APP_ID, BCID, bwsTask, _challenge ? @"true" : @"false", _traits]];
     NSLog(@"URL %@", [url absoluteString]);
     
     // Create the authentication header for Basic Authentication

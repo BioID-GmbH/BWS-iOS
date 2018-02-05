@@ -13,8 +13,7 @@
 // status
 "Initializing" = "Initialisierung…";
 "StartingCapture" = "Suche Gesicht…";
-"CaptureTriggered" = "Kopf leicht bewegen";
-"CaptureTriggeredChallengeResponse" = "Folgen Sie mir…";
+"CaptureTriggered" = "Folgen Sie mir…";
 "UploadingImages" = "Bilder werden übertragen…";
 // messages
 "Training" = "Einlernen…";

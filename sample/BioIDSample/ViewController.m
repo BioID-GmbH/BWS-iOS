@@ -63,15 +63,19 @@
     // HERE we are calling the BioID CaptureViewController for enrollment or verification.
     // Use the captureConfiguration to specify if you want to perform an enrollment or verification.
     
+    // Choose which trait(s) you want to use
+    // Possible values are for single trait "Face" or "Periocular"
+    // Or togehter "Face,Periocular" (multimodal)
+    NSString* traits = @"Face,Periocular";
+    
     if (item.tag == 1) {
-       
         // Create CaptureConfiguration for enrollment
-        _captureConfiguration = [[CaptureConfiguration alloc] initForEnrollment];
+        _captureConfiguration = [[CaptureConfiguration alloc] initForEnrollment:traits];
         [self performSegueWithIdentifier:@"showCaptureView" sender:self];
     }
     else if (item.tag == 2) {
         // Create CaptureConfiguration for verification - challenge is disabled!
-        _captureConfiguration = [[CaptureConfiguration alloc] initForVerification:FALSE];
+        _captureConfiguration = [[CaptureConfiguration alloc] initForVerification:FALSE withTraits:traits];
         [self performSegueWithIdentifier:@"showCaptureView" sender:self];
     }
 }

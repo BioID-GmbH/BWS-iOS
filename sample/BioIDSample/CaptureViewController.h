@@ -22,6 +22,12 @@ typedef enum {
     TokenTaskAutoEnroll          = 0x1000
 } TokenTask;
 
+typedef enum {
+    Face = 1,
+    Periocular = 2,
+    Voice = 4
+} Traits;
+
 @class CIDetector;
 
 @interface CaptureViewController : UIViewController <AVCaptureVideoDataOutputSampleBufferDelegate, NSURLSessionDataDelegate>
@@ -82,6 +88,8 @@ typedef enum {
     
     // Current used token task (BWS)
     NSInteger taskFlags;
+    // Current used traits (BWS)
+    NSString* usedTraits;
     
     // Actions for 3D head
     NSMutableArray *challengeSCNActions;

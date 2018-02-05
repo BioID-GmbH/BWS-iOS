@@ -126,6 +126,9 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             
             NSString *challengeJson = jsonDictionary[@"challenge"];
             
+            NSInteger traits = [jsonDictionary[@"traits"] integerValue];
+            usedTraits = [self stringWithTraits:traits];
+   
             if (challengeJson) {
                 NSLog(@"Challenge value: %@", challengeJson);
                 challenges = [NSJSONSerialization JSONObjectWithData:[challengeJson dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
@@ -369,17 +372,9 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     
     // Trigger capture
     if (!capturing && captureTriggered) {
-        
-        if (currentChallenge && !challengeRunning) {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [self showStatusLayer:NSLocalizedString(@"CaptureTriggeredChallengeResponse", nil)];
-            });
-        }
-        else {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [self showStatusLayer:NSLocalizedString(@"CaptureTriggered", nil)];
-            });
-        }
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            [self showStatusLayer:NSLocalizedString(@"CaptureTriggered", nil)];
+        });
         capturing = true;
     }
     
@@ -487,6 +482,32 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
 
 #pragma mark - BioID Web Service REST calls
 
+- (NSString *)stringWithTraits:(NSInteger)traits {
+    NSString *result = nil;
+    
+    if (traits & Face) {
+        result = @"Face";
+    }
+    if (traits & Periocular) {
+        if (result.length > 0) {
+            result = [result stringByAppendingString:@",Periocular"];
+        }
+        else {
+            result = @"Periocular";
+        }
+    }
+    if (traits & Voice) {
+        // ignore at the moment
+    }
+    
+    // If the given trait is not supported by the app (new traits e.g. 'Voice')
+    // then we use as default the 'Face' and 'Periocular' trait
+    if (result == nil) {
+        result = @"Face,Periocular";
+    }
+    return result;
+}
+
 - (void)uploadSample:(UIImage *)image withTag:(NSString*)tag {
     if (capturing && uploaded + uploading < recordings) {
         
@@ -507,11 +528,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         }
         
         UIImage *grayscale = [self convertImageToGrayScale:image];
-        
-        NSString *uploadCommand = @"upload";
-        if (tag) {
-            uploadCommand = [NSString stringWithFormat:@"upload?tag=%@&index=%i&trait=FACE", tag, sequenceNumber];
-        }
+        NSString *uploadCommand = [NSString stringWithFormat:@"upload?tag=%@&index=%i&trait=%@", tag, sequenceNumber, usedTraits];
         
         NSURL *url = [NSURL URLWithString:uploadCommand relativeToURL:self.configuration.bwsInstance];
         NSLog(@"Calling %@", url.absoluteURL);
@@ -1104,6 +1121,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     // Retrieve the head node
     headNode = nil;
     headNode = [headScene.rootNode childNodeWithName:@"BioID-Head" recursively:YES];
+    headNode.position = SCNVector3Make(0, 0, 0);
     
     // Set the scene to the view
     sceneView.scene = nil;
@@ -1116,44 +1134,25 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
 - (void)createActionForLiveDetection {
     [self createSceneView];
     
-    // Sequence
-    SCNAction *sequenceAction = nil;
-    
-    // Pause action
-    SCNAction *pauseAction = [SCNAction waitForDuration:0.0];
-   
     // Generates random number between 1 to 100
     int randDirection = arc4random_uniform(100)+1;
-        
-    if (randDirection <= 50) {
-            
-        // Left rotation and back to center position
-        SCNAction *centerToLeftAction = [SCNAction rotateByX:0 y:-0.2 z:0 duration:0.7];
-        SCNAction *leftToCenterAction = [SCNAction rotateByX:0 y:0.2 z:0 duration:0.7];
-        
-        // Right rotation and back to center position
-        SCNAction *centerToRightAction = [SCNAction rotateByX:0 y:0.2 z:0 duration:0.7];
-        SCNAction *rightToCenterAction = [SCNAction rotateByX:0 y:-0.2 z:0 duration:0.7];
-            
-        // Complete sequence
-        sequenceAction = [SCNAction repeatActionForever:[SCNAction sequence:@[centerToLeftAction, pauseAction, leftToCenterAction,
-                                                                              centerToRightAction, pauseAction, rightToCenterAction]]];
-    }
-    else {
-        // Up rotation and back to center position
-        SCNAction *centerToUpAction = [SCNAction rotateByX:-0.2 y:0 z:0 duration:0.7];
-        SCNAction *upToCenterAction = [SCNAction rotateByX:0.2 y:0 z:0 duration:0.7];
-        
-        // Down rotation and back to center position
-        SCNAction *centerToDownAction = [SCNAction rotateByX:0.2 y:0 z:0 duration:0.7];
-        SCNAction *downToCenterAction = [SCNAction rotateByX:-0.2 y:0 z:0 duration:0.7];
-            
-        // Complete sequence
-        sequenceAction = [SCNAction repeatActionForever:[SCNAction sequence:@[centerToUpAction, pauseAction, upToCenterAction,
-                                                                              centerToDownAction, pauseAction, downToCenterAction]]];
+    
+    SCNAction *action;
+    if (randDirection <= 25) {
+        // Left rotation
+        action = [SCNAction rotateByX:0 y:-0.2 z:0 duration:1.5];
+    } else if (randDirection > 25 && randDirection <= 50) {
+        // Right rotation
+        action = [SCNAction rotateByX:0 y:0.2 z:0 duration:1.5];
+    } else if (randDirection > 50 && randDirection <= 75) {
+         // Up rotation
+         action = [SCNAction rotateByX:-0.2 y:0 z:0 duration:1.5];
+    } else {
+         // Down rotation
+         action = [SCNAction rotateByX:0.2 y:0 z:0 duration:1.5];
     }
     
-    [headNode runAction:sequenceAction];
+    [headNode runAction:action];
 }
 
 - (void)createActionForChallenge {
@@ -1214,7 +1213,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     [messageLabel setNumberOfLines:3];
     [messageLabel setFrame:CGRectMake(0, 0, viewWithBlurredBackground.frame.size.width, viewWithBlurredBackground.frame.size.height)];
     
-    [viewWithBlurredBackground addSubview:messageLabel];
+    [viewWithBlurredBackground.contentView addSubview:messageLabel];
     [self.view addSubview:viewWithBlurredBackground];
     
     statusViewBlurred = [[UIVisualEffectView alloc] initWithEffect:effectDark];
@@ -1225,7 +1224,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     [statusLabel setTextAlignment:NSTextAlignmentCenter];
     [statusLabel setFrame:CGRectMake(0, 0, statusViewBlurred.frame.size.width, statusViewBlurred.frame.size.height)];
     
-    [statusViewBlurred addSubview:statusLabel];
+    [statusViewBlurred.contentView addSubview:statusLabel];
     [self.view addSubview:statusViewBlurred];
     
     uploadProgressView1 = [[UIProgressView alloc] init];
@@ -1542,14 +1541,14 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     int offsetX = 10;
     int offsetY = 15;
     int buttonHeight = 45;
-    
+
     // Cleanup alertView and remove UILabels and UIButtons
-    for (UIView *subview in alertView.subviews) {
+    for (UIView *subview in alertView.contentView.subviews) {
         if ([subview isKindOfClass:[UILabel class]] || [subview isKindOfClass:[UIButton class]]) {
             [subview removeFromSuperview];
         }
     }
-    
+
     UILabel *motLabel = [[UILabel alloc] init];
     [motLabel setTextColor:[UIColor whiteColor]];
     [motLabel setFont:[UIFont fontWithName:BIOID_FONT size:14]];
@@ -1566,7 +1565,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     // Resize alertView for the message text
     alertViewHeight = titleYPos+titleHeight+motLabel.frame.size.height+buttonHeight+offsetY*2;
     [alertView setBounds:CGRectMake(0, 0, alertViewWidth, alertViewHeight)];
-    [alertView addSubview:motLabel];
+    [alertView.contentView addSubview:motLabel];
     
     UILabel *titleLabel = [[UILabel alloc] init];
     [titleLabel setTextColor:[UIColor whiteColor]];
@@ -1574,7 +1573,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     [titleLabel setText:title];
     [titleLabel setTextAlignment:NSTextAlignmentCenter];
     [titleLabel setFrame:CGRectMake(0, titleYPos, alertViewWidth, titleHeight)];
-    [alertView addSubview:titleLabel];
+    [alertView.contentView addSubview:titleLabel];
     
     if (!abortAction || !continueAction) {
         // We have only one button
@@ -1591,7 +1590,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             [actionButton setTag:2];
         }
         [actionButton addTarget:self action:@selector(actionClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [alertView addSubview:actionButton];
+        [alertView.contentView addSubview:actionButton];
     }
     else {
         // Ohterwise we have 2 buttons
@@ -1604,7 +1603,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         [abortButton setTitle:NSLocalizedString(@"Abort", nil) forState:UIControlStateNormal];
         [abortButton setTag:2];
         [abortButton addTarget:self action:@selector(actionClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [alertView addSubview:abortButton];
+        [alertView.contentView addSubview:abortButton];
         
         UIButton *continueButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         [[continueButton titleLabel] setFont:[UIFont fontWithName:BIOID_FONT size:18]];
@@ -1614,7 +1613,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         [continueButton setFrame:CGRectMake(alertViewWidth/2-1, alertViewHeight-buttonHeight, alertViewWidth/2+2, buttonHeight+1)];
         [continueButton setTitle:NSLocalizedString(@"Continue", nil) forState:UIControlStateNormal];
         [continueButton addTarget:self action:@selector(actionClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [alertView addSubview:continueButton];
+        [alertView.contentView addSubview:continueButton];
     }
     
     [alertView setCenter:self.view.center];

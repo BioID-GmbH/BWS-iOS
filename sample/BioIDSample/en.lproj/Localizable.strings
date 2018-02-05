@@ -13,8 +13,7 @@
 // status
 "Initializing" = "Initializing…";
 "StartingCapture" = "Trying to detect face…";
-"CaptureTriggered" = "Move your head slightly";
-"CaptureTriggeredChallengeResponse" = "Follow me…";
+"CaptureTriggered" = "Follow me…";
 "UploadingImages" = "Uploading images…";
 // messages
 "Training" = "Training…";
