@@ -37,8 +37,9 @@
 "Continue" = "Continue";
 // error messages
 "TokenRequestFailed" = "Request of BWS token failed";
-"EnsureRegistrationAndInternet" = "Please ensure that your device is registered and an internet connection is available. (%@ %ld)";
+"EnsureRegistration" = "Please ensure that your device is registered. (%@ %ld)";
 "ConnectionError" = "Connection Error";
+"ConnectionErrorMessage" = "Please check your internet connection.";
 "ReportedError" = "The error '%@' has been reported.";
 "ImageUploadError" = "Image Upload Error";
 "ImageDeclined" = "The uploaded image was declined!";

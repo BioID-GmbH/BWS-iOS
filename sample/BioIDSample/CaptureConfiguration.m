@@ -8,6 +8,7 @@
 #import "CaptureConfiguration.h"
 
 #error You need to put your own credentials here. Go to https://bwsportal.bioid.com/register if you don't have a trial instance of BWS!
+#warning Don't forget these credentials should come from your server in production systems! Only for quickly checking how this code works you put the credentials here!
 NSString * const BWS_INSTANCE_NAME = @"";
 NSString * const CLIENT_APP_ID = @"";
 NSString * const CLIENT_APP_SECRET = @"";
@@ -64,7 +65,7 @@ NSString * const BCID = @"";
     if(_performEnrollment) {
         [self fetchBWSToken:@"enroll" onCompletion:^(NSString *token, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                _bwsToken = token;
+                self->_bwsToken = token;
                 callbackBlock(error);
             });
         }];
@@ -72,7 +73,7 @@ NSString * const BCID = @"";
     else {
         [self fetchBWSToken:@"verify" onCompletion:^(NSString *token, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                _bwsToken = token;
+                self->_bwsToken = token;
                 callbackBlock(error);
             });
         }];

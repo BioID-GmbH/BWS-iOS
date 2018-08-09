@@ -37,8 +37,9 @@
 "Continue" = "Weiter";
 // error messages
 "TokenRequestFailed" = "Tokenanfrage fehlgeschlagen";
-"EnsureRegistrationAndInternet" = "Stellen Sie sicher, dass das Gerät registriert ist und eine Verbindung zum Internet besteht. (%@ %ld)";
+"EnsureRegistration" = "Stellen Sie sicher, dass das Gerät registriert ist. (%@ %ld)";
 "ConnectionError" = "Verbindungsfehler";
+"ConnectionErrorMessage" = "Es besteht anscheinend keine Verbindung zum Internet.";
 "ReportedError" = "Es wurde der Fehler '%@' gemeldet.";
 "ImageUploadError" = "Bildübertragung fehlgeschlagen";
 "ImageDeclined" = "Das Bild wurde vom Service zurückgewiesen!";

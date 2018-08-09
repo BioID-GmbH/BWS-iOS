@@ -6,6 +6,7 @@
 //
 
 #import "CaptureViewController.h"
+// #import <Photos/Photos.h>
 
 @interface CaptureViewController ()
 
@@ -108,7 +109,12 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     [self showMessageLayer:NSLocalizedString(@"Initializing", nil)];
     [self.configuration ensureToken:^(NSError *error) {
         if(error) {
-            [self reportError:[NSString stringWithFormat:NSLocalizedString(@"EnsureRegistrationAndInternet", nil), error.domain, (long)error.code] withTitle:NSLocalizedString(@"TokenRequestFailed", nil) allowContinue:NO];
+            if (error.code == -1009) {
+                [self reportError:[NSString stringWithFormat:NSLocalizedString(@"ConnectionErrorMessage", nil), error.domain, (long)error.code] withTitle:NSLocalizedString(@"ConnectionError", nil) allowContinue:NO];
+            }
+            else {
+                [self reportError:[NSString stringWithFormat:NSLocalizedString(@"EnsureRegistration", nil), error.domain, (long)error.code] withTitle:NSLocalizedString(@"TokenRequestFailed", nil) allowContinue:NO];
+            }
         }
         else {
             [self hideMessageLayer];
@@ -116,22 +122,22 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             // Read BWS Token
             NSString *base64Decoded = [self base64UrlDecode:self.configuration.bwsToken];
             NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:[base64Decoded dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
-            taskFlags = [jsonDictionary[@"task"] integerValue];
+            self->taskFlags = [jsonDictionary[@"task"] integerValue];
             
-            maxTries = (int)(taskFlags & TokenTaskMaxTriesMask);
-            if (maxTries == 0) {
-                maxTries = DEFAULT_MAX_TRIES;
+            self->maxTries = (int)(self->taskFlags & TokenTaskMaxTriesMask);
+            if (self->maxTries == 0) {
+                self->maxTries = DEFAULT_MAX_TRIES;
             }
-            executions = maxTries;
+            self->executions = self->maxTries;
             
             NSString *challengeJson = jsonDictionary[@"challenge"];
             
             NSInteger traits = [jsonDictionary[@"traits"] integerValue];
-            usedTraits = [self stringWithTraits:traits];
+            self->usedTraits = [self stringWithTraits:traits];
    
             if (challengeJson) {
                 NSLog(@"Challenge value: %@", challengeJson);
-                challenges = [NSJSONSerialization JSONObjectWithData:[challengeJson dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
+                self->challenges = [NSJSONSerialization JSONObjectWithData:[challengeJson dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
             }
             
             if (self.configuration.performEnrollment) {
@@ -527,18 +533,22 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             [self setChallengeAction];
         }
         
-        UIImage *grayscale = [self convertImageToGrayScale:image];
         NSString *uploadCommand = [NSString stringWithFormat:@"upload?tag=%@&index=%i&trait=%@", tag, sequenceNumber, usedTraits];
         
         NSURL *url = [NSURL URLWithString:uploadCommand relativeToURL:self.configuration.bwsInstance];
         NSLog(@"Calling %@", url.absoluteURL);
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url.absoluteURL];
         NSString *authorizationHeader = [NSString stringWithFormat:@"Bearer %@", self.configuration.bwsToken];
+
+        // For uploading color image
+        UIImage* resizedImage = [self resizeImageForUpload:image];
+        NSData *pngImage = UIImagePNGRepresentation(resizedImage);
         
-        NSData *pngImage = UIImagePNGRepresentation(grayscale);
-//      Save image to the photo library
-//      ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-//      [library writeImageDataToSavedPhotosAlbum:pngImage metadata:NULL completionBlock:NULL];
+        // Save image to the photo library
+        // [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        //      [PHAssetChangeRequest creationRequestForAssetFromImage:resizedImage];
+        //   } completionHandler:^(BOOL success, NSError *error) {
+        //   }];
         
         NSLog(@"PNG FileSize: %.f KB", (float)pngImage.length/1024.0f);
         NSString* base64Image = [NSString stringWithFormat:@"data:image/png;base64,%@", [pngImage base64EncodedStringWithOptions:0]];
@@ -763,6 +773,27 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     return grayImage;
 }
 
+- (UIImage *)resizeImageForUpload:(UIImage *)image {
+    int resizeWidth;
+    int resizeHeight;
+    
+    if (image.size.width > image.size.height) {
+        // Landscape mode
+        resizeWidth = 480;
+        resizeHeight = 360;
+    }
+    else  {
+        // Portrait mode
+        resizeWidth = 360;
+        resizeHeight = 480;
+    }
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(resizeWidth, resizeHeight), YES, 1.0);
+    [image drawInRect:CGRectMake(0, 0, resizeWidth, resizeHeight)];
+    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resizedImage;
+}
+
 - (UIImage *)resizeImageForMotionDetection:(UIImage *)image {
     int resizeWidth;
     int resizeHeight;
@@ -912,8 +943,8 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        debugLabel.attributedText = infoString;
-        [debugLabel setNeedsDisplay];
+        self->debugLabel.attributedText = infoString;
+        [self->debugLabel setNeedsDisplay];
     });
 #endif
     
@@ -1146,7 +1177,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         action = [SCNAction rotateByX:0 y:0.2 z:0 duration:1.5];
     } else if (randDirection > 50 && randDirection <= 75) {
          // Up rotation
-         action = [SCNAction rotateByX:-0.2 y:0 z:0 duration:1.5];
+        action = [SCNAction rotateByX:-0.2 y:0 z:0 duration:1.5];
     } else {
          // Down rotation
          action = [SCNAction rotateByX:0.2 y:0 z:0 duration:1.5];
