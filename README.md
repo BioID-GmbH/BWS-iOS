@@ -17,6 +17,6 @@ For the complete documentation of the BWS API please visit the [Developer Refere
 You can also try out the BioID [facial recognition app][bioid] with identity management using BioID Connect - available via [iTunes App Store][appstore].
 
 [bioid]: https://www.bioid.com/facial-recognition-app "BioID Facial Recognition App"
-[appstore]: https://itunes.apple.com/us/app/bioid-facial-recognition-authenticator/id1054317153 "BioID iOS app"
+[appstore]: https://apps.apple.com/us/app/bioid-facial-recognition-authenticator/id1054317153 "BioID iOS app"
 [docs]: https://developer.bioid.com/bwsreference "BWS documentation"
 [trial]: https://bwsportal.bioid.com/register "Register for a trial instance"
