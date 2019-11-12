@@ -22,4 +22,4 @@ You can also try out the BioID [facial recognition app][bioid] with identity man
 [appstore]: https://apps.apple.com/us/app/bioid-facial-recognition-authenticator/id1054317153 "BioID iOS app"
 [docs]: https://developer.bioid.com/bwsreference "BWS documentation"
 [trial]: https://bwsportal.bioid.com/register "Register for a trial instance"
-[liveness]: https://www.bioid.com/liveness-detection/ "face liveness detection"
+[liveness]: https://www.bioid.com/liveness-detection/ "liveness detection"
