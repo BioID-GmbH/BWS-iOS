@@ -18,6 +18,8 @@ BioID offers sophisticated [face liveness detection][liveness] for distinguishin
 
 You can also try out the BioID [facial recognition app][bioid] with identity management using BioID Connect - available via [iTunes App Store][appstore].
 
+[<img src="https://img.youtube.com/vi/e5lP2Fja3Ow/maxresdefault.jpg" width="50%">](https://youtu.be/e5lP2Fja3Ow)
+
 [bioid]: https://www.bioid.com/facial-recognition-app/ "BioID Facial Recognition App"
 [appstore]: https://apps.apple.com/us/app/bioid-facial-recognition-authenticator/id1054317153 "BioID iOS app"
 [docs]: https://developer.bioid.com/bwsreference "BWS documentation"
