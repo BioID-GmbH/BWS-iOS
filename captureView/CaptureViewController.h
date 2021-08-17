@@ -120,6 +120,7 @@ typedef enum {
     BOOL capturing;
    
     // For enrollment
+    BOOL enrollment;
     int turnCount;
     int requiredTurns;
     

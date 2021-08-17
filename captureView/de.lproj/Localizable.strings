@@ -13,7 +13,8 @@
 // status
 "Initializing" = "Initialisierung…";
 "StartingCapture" = "Suche Gesicht…";
-"CaptureTriggered" = "Folgen Sie mir…";
+"UserInstructionNodYourHead" = "Nicken Sie mit dem Kopf";
+"UserInstructionFollowMe" = "Folgen Sie dem blauen Kopf";
 "UploadingImages" = "Bilder werden übertragen…";
 // messages
 "Training" = "Einlernen…";

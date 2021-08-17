@@ -158,7 +158,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     [self cleanup];
     [super viewWillDisappear:TRUE];
 }
-    
+
 - (void)cleanup {
     NSLog(@"-------------- Clean up ------------------");
    
@@ -224,7 +224,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     
     messageLabel = nil;
     statusLabel = nil;
-    debugLabel = nil; 
+    debugLabel = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -288,6 +288,10 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
         [self createActionForChallenge];
     }
     else {
+        enrollment = NO;
+        if ((taskFlags & TokenTaskEnroll) == TokenTaskEnroll) {
+            enrollment = YES;
+        }
         // Do live detection action
         [self createActionForLiveDetection];
     }
@@ -346,7 +350,13 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             exifOrientation = kCGImagePropertyOrientationUp;
             break;
         }
+        case UIDeviceOrientationUnknown: {
+            imageOrientation = UIImageOrientationUp;
+            exifOrientation = kCGImagePropertyOrientationUp;
+            break;
+        }
         case UIDeviceOrientationPortrait:
+        case UIDeviceOrientationFaceUp:
             // ** Fall-through **
         default:
             // Device oriented vertically, home button on the bottom
@@ -378,8 +388,12 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     
     // Trigger capture
     if (!capturing && captureTriggered) {
+        NSString *instruction = @"UserInstructionNodYourHead";
+        if (challenges || enrollment)  {
+            instruction = @"UserInstructionFollowMe";
+        }
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            [self showStatusLayer:NSLocalizedString(@"CaptureTriggered", nil)];
+            [self showStatusLayer:NSLocalizedString(instruction, nil)];
         });
         capturing = true;
     }
@@ -416,7 +430,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
                 // create template for motion detection
                 [self createTemplate:currentImage];
             }
-        } 
+        }
     }
 }
 
@@ -527,28 +541,31 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             [self hide3DHeadLayer];
             [self showStatusLayer:NSLocalizedString(@"UploadingImages", nil)];
             // Switch off face finder
-            faceFinderRunning = false;
+            
         }
         else if (challengeRunning) {
             [self setChallengeAction];
         }
         
         NSString *uploadCommand = [NSString stringWithFormat:@"upload?tag=%@&index=%i&trait=%@", tag, sequenceNumber, usedTraits];
-        
         NSURL *url = [NSURL URLWithString:uploadCommand relativeToURL:self.configuration.bwsInstance];
-        NSLog(@"Calling %@", url.absoluteURL);
+        NSLog(@"%@", url.absoluteURL);
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url.absoluteURL];
         NSString *authorizationHeader = [NSString stringWithFormat:@"Bearer %@", self.configuration.bwsToken];
-
+        
+        // For uploading grayscale image
+        // UIImage *grayscale = [self convertImageToGrayScale:image];
+        // NSData *pngImage = UIImagePNGRepresentation(grayscale);
+        
         // For uploading color image
         UIImage* resizedImage = [self resizeImageForUpload:image];
         NSData *pngImage = UIImagePNGRepresentation(resizedImage);
         
         // Save image to the photo library
-        // [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        //      [PHAssetChangeRequest creationRequestForAssetFromImage:resizedImage];
-        //   } completionHandler:^(BOOL success, NSError *error) {
-        //   }];
+       // [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+       //    [PHAssetChangeRequest creationRequestForAssetFromImage:resizedImage];
+       //   } completionHandler:^(BOOL success, NSError *error) {
+       //}];
         
         NSLog(@"PNG FileSize: %.f KB", (float)pngImage.length/1024.0f);
         NSString* base64Image = [NSString stringWithFormat:@"data:image/png;base64,%@", [pngImage base64EncodedStringWithOptions:0]];
@@ -1038,6 +1055,13 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
 - (void)viewWillLayoutSubviews {
     previewLayer.frame = self.view.bounds;
     previewLayer.connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+    
+#if TARGET_OS_MACCATALYST
+    // Code to include for Macos version
+    // macOS window resize
+    [self updateLayers];
+#endif
+   
 }
 
 -(void)orientationChanged:(NSNotification *)notification {
@@ -1165,22 +1189,32 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
 - (void)createActionForLiveDetection {
     [self createSceneView];
     
-    // Generates random number between 1 to 100
-    int randDirection = arc4random_uniform(100)+1;
+    [headNode removeAllActions];
     
-    SCNAction *action;
-    if (randDirection <= 25) {
-        // Left rotation
-        action = [SCNAction rotateByX:0 y:-0.2 z:0 duration:1.5];
-    } else if (randDirection > 25 && randDirection <= 50) {
-        // Right rotation
-        action = [SCNAction rotateByX:0 y:0.2 z:0 duration:1.5];
-    } else if (randDirection > 50 && randDirection <= 75) {
-         // Up rotation
-        action = [SCNAction rotateByX:-0.2 y:0 z:0 duration:1.5];
-    } else {
-         // Down rotation
-         action = [SCNAction rotateByX:0.2 y:0 z:0 duration:1.5];
+    SCNAction *action = nil;
+    if (enrollment) {
+        // Generates random number between 1 to 100
+        int randDirection = arc4random_uniform(100)+1;
+        
+        if (randDirection <= 25) {
+            // Left rotation
+            action = [SCNAction rotateByX:0 y:-0.2 z:0 duration:1.5];
+        } else if (randDirection > 25 && randDirection <= 50) {
+            // Right rotation
+            action = [SCNAction rotateByX:0 y:0.2 z:0 duration:1.5];
+        } else if (randDirection > 50 && randDirection <= 75) {
+             // Up rotation
+            action = [SCNAction rotateByX:-0.2 y:0 z:0 duration:1.5];
+        } else {
+             // Down rotation
+             action = [SCNAction rotateByX:0.2 y:0 z:0 duration:1.5];
+        }
+    }
+    else {
+        SCNAction *moveUp = [SCNAction rotateByX:-0.2 y:0 z:0 duration:1.0];
+        SCNAction *moveDown =  [SCNAction rotateByX:0.2 y:0 z:0 duration:1.0];
+        SCNAction *moveSequence = [SCNAction sequence:@[moveUp,moveDown]];
+        action = [SCNAction repeatActionForever:moveSequence];
     }
     
     [headNode runAction:action];
@@ -1293,6 +1327,23 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     [debugLabel setBackgroundColor:[UIColor blackColor]];
     [self.view addSubview:debugLabel];
 #endif
+}
+
+- (void)updateLayers {
+
+    [viewWithBlurredBackground setFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+    [sceneView setFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+    [messageLabel setFrame:CGRectMake(0, 0, viewWithBlurredBackground.frame.size.width, viewWithBlurredBackground.frame.size.height)];
+    
+    [statusViewBlurred setCenter:CGPointMake(self.view.bounds.size.width/2, 70)];
+
+    [uploadProgressView1 setFrame:CGRectMake(20, self.view.bounds.size.height-50, self.view.bounds.size.width-40, 30)];
+   
+    [uploadProgressView2 setFrame:CGRectMake(20, self.view.bounds.size.height-30, self.view.bounds.size.width-40, 30)];
+    
+   // [debugLabel setBounds:CGRectMake(0, 0, 375, 20)];
+    [alertView setCenter:self.view.center];
+
 }
 
 - (void)setLayers:(UIDeviceOrientation)deviceOrientation {
@@ -1476,7 +1527,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             noFaceFound++; // Multiple faces are not allowed!
         }
 
-        [self stop]; 
+        [self stop];
         [self showMessageLayer:msg];
         
         if (currentChallenge && uploaded > 0) {
