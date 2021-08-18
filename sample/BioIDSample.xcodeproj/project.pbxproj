@@ -129,7 +129,6 @@
 				TargetAttributes = {
 					C6AE8BA91BFDD19400C44D75 = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = "";
 					};
 				};
 			};
@@ -323,7 +322,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BioIDSample/BioIDSample.entitlements;
-				CURRENT_PROJECT_VERSION = 350;
+				CURRENT_PROJECT_VERSION = 351;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = BioIDSample/Info.plist;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
@@ -341,7 +340,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BioIDSample/BioIDSample.entitlements;
-				CURRENT_PROJECT_VERSION = 350;
+				CURRENT_PROJECT_VERSION = 351;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = BioIDSample/Info.plist;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
