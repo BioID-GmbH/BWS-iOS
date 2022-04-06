@@ -37,7 +37,7 @@ static NSTimeInterval const MESSAGE_DISPLAY_TIME_SHORT = 1.7;
 // Seconds after which the view will be dismissed if no activity (face finding/motion detection/...) was detected
 static NSTimeInterval const INACTIVITY_TIMEOUT = 12;
 // The threshold value given in percentage of complete motion (i.e. between 0 and 100)
-static int const MIN_MOVEMENT_PERCENTAGE = 15;
+static int const MIN_MOVEMENT_PERCENTAGE = 18;
 // Maximum tries until failure is reported
 static int const DEFAULT_MAX_TRIES = 3;
 // Maximum tries until abort
@@ -256,7 +256,6 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     uploaded = 0;
     uploading = 0;
     recordings = 2;
-    sequenceNumber = 0;
     continuousFoundFaces = 0;
     
     uploadTask1 = nil;
@@ -631,6 +630,8 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             }];
         }
     }];
+    // After performing task, reset sequenceNumber
+    sequenceNumber = 0;
     [dataTask resume];
 }
 
