@@ -68,7 +68,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
     turnCount = 0;
     noFaceFound = 0;
     sequenceNumber = 0;
-
+    
     requiredTurns = REQUIRED_TURNS;
     executions = DEFAULT_MAX_TRIES;
 
@@ -630,7 +630,7 @@ NSString *const BIOID_FONT = @"HelveticaNeue";
             }];
         }
     }];
-     // After performing task, reset 
+    // After performing task, reset sequenceNumber
     sequenceNumber = 0;
     [dataTask resume];
 }
