@@ -67,8 +67,8 @@ A free user registration is required. After you have access to the BioID Web Ser
 
 
 ### Create and configure your client app on bwsportal.bioid.com
-After you are logged in to the portal, select your client and go to the 'Configuration' section. 
-The 'Client configuration' contains all information for accessing the BWS, as well as other information needed for the user BCIDs.
+After you are logged in to the portal, click on your BWS client on symbol „Update Classic client“ (the ‘pencil’ icon on the right). 
+A dialog opens that contains all information for accessing the BWS, as well as other information needed for the user BCIDs.
 
 For the creation of BCIDs for users in your app the following information is needed:
 
@@ -80,7 +80,7 @@ For the creation of BCIDs for users in your app the following information is nee
 The BCID with the example values from above is `bws.12.4711`.
 Take a look at Web API endpoint for e.g. `https://bws.bioid.com`. In this case the BWS instance name is `bws`.
 
-Click on the 'Web API keys' the add button. In the dialog window the app identifier and app secret is shown.
+Click on 'Show client keys' on your client (the ‘key’ icon on the right). The dialog 'Classic keys' opens. Now create a new classic key (WEB API key) for your client implementation by clicking the 'Plus' symbol
 
 ***Now you have all necessary data to call BWS!***
 
